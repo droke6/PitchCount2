@@ -53,3 +53,29 @@
     cursor: pointer;
   }
   
+  .schedule-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+  }
+  
+  .schedule-grid {
+    margin-bottom: 20px;
+  }
+  
+  .grid-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-gap: 10px;
+  }
+  
+  .grid-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+  }
+  
+  .grid-item.empty {
+    visibility: hidden;
+  }
+  

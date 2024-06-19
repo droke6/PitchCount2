@@ -1,0 +1,136 @@
+.header {
+    display: flex;
+    flex-direction: row;
+}
+
+.header-content {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column;
+    margin-right: 5rem;
+}
+
+.header-content h1 {
+    font-family: var(--font-family);
+    font-size: 62px;
+    font-weight: 800;
+    line-height: 75px;
+    letter-spacing: -0.04em;
+    color: white;
+}
+
+.header-content p {
+    font-family: var(--font-family);
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 28px;
+    color: var(--color-text);
+    margin-top: 1.5rem;
+}
+
+.header-content_buttons {
+    width: 100%;
+    margin: 2rem 0 1rem;
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.header-content_buttons button {
+
+    width: 100%;
+    min-height: 50px;
+    font-family: var(--font-family);
+    font-weight: 400;
+    font-size: 20px;
+    line-height: 28px;
+    background: #FF4820;
+    border: 2px solid #FF4820;
+    padding: 0 1rem;
+    color: white;
+    cursor: pointer;
+    outline: none;
+    border-radius: 5px;
+}
+
+/* .sports-icons {
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    margin-top: 2rem;
+} */
+
+/* .sports-icons img {
+    width: 181.79px;
+    height: 90px;
+} */
+
+.header-box {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-container {
+    height: 200px
+}
+
+
+/* @media screen and (max-width: 1050px) {
+    .uniforms_header {
+        flex-direction: column;
+    }
+
+    .uniforms_header-content {
+        margin: 0 0 3rem;
+    }
+
+}
+
+@media screen and (max-width: 650px) {
+    .uniforms_header-content h1 {
+        font-size: 48px;
+        line-height: 60px;
+        text-align: center;
+    }
+
+    .uniforms_header-content p {
+        font-size: 16px;
+        line-height: 24px;
+    }
+
+
+    .uniforms_header-content_sports p {
+        margin: 0;
+    }
+
+    .uniforms__header-content__buttons button {
+        font-size: 16px;
+        line-height: 24px;
+    }
+}
+
+@media screen and (max-width: 490px) {
+    .uniforms_header-content h1 {
+        font-size: 36px;
+        line-height: 48px;
+    }
+
+    .uniforms_header-content p {
+        font-size: 14px;
+        line-height: 24px;
+    }
+
+    .uniforms_header-content_buttons button {
+        font-size: 12px;
+        line-height: 16px;
+    }
+}
+
+.icon {
+    color: white;
+} */
