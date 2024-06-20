@@ -18,10 +18,6 @@ function Home() {
         <SideBar />
         <div className="content">
           <Topbar />
-          <div className="team-grid-container">
-            <h2>My Teams</h2>
-            <TeamGrid teams={teams} grade_level={grade_level} />
-          </div>
         </div>
       </div>
     </>

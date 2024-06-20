@@ -4,18 +4,26 @@ import { useNavigate } from 'react-router-dom';
 import { Box, Typography } from '@mui/material'
 import AccountCircleSharpIcon from '@mui/icons-material/AccountCircleSharp';
 import '../../styles/Sidebar.css'
-import { ACCESS_TOKEN, REFRESH_TOKEN } from '../../constants'
+import { ACCESS_TOKEN, FIRST_NAME, REFRESH_TOKEN, USER_ID, LAST_NAME } from '../../constants'
 
 
 const SideBar = () => {
   const [first_name, setFirstName] = useState("");
   const [last_name, setLastName] = useState("");
+  const navigate = useNavigate();
+
+  function navigateTo(path) {
+    navigate(path);
+  }
 
   const handleLogout = () => {
-    // Clear tokens from localStorage
     localStorage.removeItem(ACCESS_TOKEN);
     localStorage.removeItem(REFRESH_TOKEN);
-
+    localStorage.removeItem(FIRST_NAME);
+    localStorage.removeItem(LAST_NAME);
+    localStorage.removeItem(USER_ID);
+    navigate('/sign-in');
+  };
 
   useEffect(() => {
     const storedFirstName = localStorage.getItem('first_name');
@@ -28,15 +36,6 @@ const SideBar = () => {
     }
   }, []);
 
-    navigate('/sign-in');
-  };
-
-  const navigate = useNavigate();
-
-  function navigateTo(path) {
-    navigate(path);
-  }
-
   return (
     <div>
       <Sidebar className='sidebar' style={{height:"100vh"}}>
@@ -47,7 +46,7 @@ const SideBar = () => {
             <Box>
               <Box textAlign="center">
                 <Typography
-                  variant="h2"
+                  variant="h6"
                   color="black"
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}

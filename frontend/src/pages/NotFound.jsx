@@ -1,4 +1,5 @@
 import video from '../assets/flamingos.mp4'
+import '../styles/NotFound.css'
 
 function NotFound() {
   return (
