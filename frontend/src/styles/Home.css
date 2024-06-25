@@ -1,6 +1,7 @@
 .page-container {
   display: flex;
   height: 100vh;
+  overflow: hidden; /* Prevents scrolling on the entire page */
 }
 
 .content {
@@ -8,77 +9,36 @@
   display: flex;
   flex-direction: column;
   padding: 16px;
-}
-
-h2 {
-  text-align: center;
+  overflow-y: auto; /* Enable scrolling for the content area */
 }
 
 .team-grid-container {
-  display: flex;
-  flex-direction: column;
+  overflow-y: auto; /* Enable scrolling for the TeamGrid section */
+  flex: 1; /* Allow TeamGrid to take up remaining space */
+  padding: 16px; /* Add padding as needed */
 }
 
 .top {
-  display: flex;
-  justify-content: flex-end;
-  align-items: center; /* Ensures all items inside .top are aligned to the center vertically */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  z-index: 1000;
+  border-bottom: 1px solid #ccc;
+  padding: 10px 16px;
 }
 
-h1, h4 {
-  color: #1a3433;
-}
-
-.dropdown {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  flex: 2;
-}
-
-/* .navbar {
-  display: flex;
-  align-items: center;
-} */
-
-.buttons {
-  display: flex;
-  justify-content: center;
-  margin: 20px 0;
-}
-
-.game-button {
-  background-color: #456564;
-  border: none;
-  color: white;
-  padding: 20px 40px;
-  text-align: center;
-  text-decoration: none;
-  display: inline-block;
-  font-size: 40px;
-  margin: 40px;
-  cursor: pointer;
-  border-radius: 10px;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-}
-
-.game-button:hover {
-  background-color: #45a049;
-  box-shadow: 0 6px 8px rgba(0,0,0,0.1);
-}
-
-.game-button:active {
-  transform: scale(0.98);
-}
-
-@media screen and (max-width: 700px) {
-  .buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 250px;
+  height: 100%;
+  background-color: #fff;
+  border-right: 1px solid #ccc;
+  z-index: 1000;
+  overflow-y: auto; /* Enable scrolling for Sidebar */
 }
 
 @media screen and (max-width: 550px) {
@@ -86,9 +46,12 @@ h1, h4 {
     display: none;
   }
 
-  .buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  .content {
+    padding-top: 60px; /* Adjust padding top to accommodate Topbar */
+  }
+
+  .top {
+    left: 0;
+    width: 100%;
   }
 }

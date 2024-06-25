@@ -50,6 +50,7 @@ function Home() {
         <SideBar />
         <div className="content">
           <Topbar teams={teams} />
+          <h1 style={{'textAlign': 'center', 'marginBottom': -30}}>My Teams</h1>
           <TeamGrid teams={teams}/>
         </div>
       </div>

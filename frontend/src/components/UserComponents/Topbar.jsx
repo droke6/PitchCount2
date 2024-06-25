@@ -12,10 +12,14 @@ const Topbar = ({ teams }) => {
     setSearchTerm(value);
 
     // Filter teams based on the search term
-    const filteredTeams = teams.filter(team =>
-      team.name.toLowerCase().includes(value.toLowerCase())
-    );
-    setSearchResults(filteredTeams);
+    if (value) {
+      const filteredTeams = teams.filter(team =>
+        team.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setSearchResults(filteredTeams);
+    } else {
+      setSearchResults([]);
+    }
   };
 
   return (
@@ -35,8 +39,8 @@ const Topbar = ({ teams }) => {
         </IconButton>
       </Box>
 
-      {/* Display search results */}
-      {searchResults.length > 0 && (
+      {/* Display search results only if searchTerm is not empty */}
+      {searchTerm && searchResults.length > 0 && (
         <Box display="flex" flexDirection="column" position="absolute" zIndex="10" mt={2} bg="white" boxShadow="0 2px 4px rgba(0,0,0,0.1)" borderRadius="4px" width={190}>
           {searchResults.map((team, index) => (
             <Box key={index} p={1} borderBottom="1px solid #ddd">
