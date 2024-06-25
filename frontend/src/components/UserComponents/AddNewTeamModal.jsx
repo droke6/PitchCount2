@@ -2,7 +2,7 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { ACCESS_TOKEN } from '../../constants';
 
-const AddTeamModal = ({ show, handleClose, handleSave }) => {
+const AddTeamModal = ({ show, handleClose, handleSave, }) => {
   const [teamName, setTeamName] = useState('');
   const [gradeLevel, setGradeLevel] = useState('');
 
@@ -17,7 +17,7 @@ const AddTeamModal = ({ show, handleClose, handleSave }) => {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json'
         },
-        body: JSON.stringify({ name: teamName, grade: gradeLevel })  // Ensure grade is included
+        body: JSON.stringify({ name: teamName, grade: gradeLevel })
       })
         .then(response => {
           if (!response.ok) {

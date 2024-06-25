@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react';
+
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import AddTeamModal from './AddNewTeamModal';
+// import DeleteTeamModal from './DeleteTeamModal';
 import { ACCESS_TOKEN, LAST_NAME } from '../../constants';
 import '../../styles/TeamGrid.css';
 
@@ -19,7 +21,6 @@ function TeamGrid() {
 
     const token = localStorage.getItem(ACCESS_TOKEN);
     if (token) {
-      // Fetch teams from the backend
       fetch('http://localhost:8000/api/teams/', {
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -28,9 +29,7 @@ function TeamGrid() {
       })
         .then(response => {
           if (!response.ok) {
-            return response.text().then(text => {
-              throw new Error(`HTTP error! Status: ${response.status}, Response: ${text}`);
-            });
+            throw new Error(`HTTP error! Status: ${response.status}`);
           }
           return response.json();
         })
@@ -38,12 +37,52 @@ function TeamGrid() {
         .catch(error => console.error('Error fetching teams:', error.message));
     } else {
       console.error('No token found');
-      navigate('/login'); // Redirect to login if no token is found
+      navigate('/login');
     }
   }, [navigate]);
 
   const handleSave = (newTeam) => {
     setTeamList([...teamList, newTeam]);
+  };
+
+  const handleDelete = (teamId) => {
+    const token = localStorage.getItem(ACCESS_TOKEN);
+    if (!token) {
+      console.error('No token found');
+      navigate('/login');
+      return;
+    }
+
+    fetch(`http://localhost:8000/api/teams/${teamId}/`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        // Filter out the deleted team from teamList
+        setTeamList(prevTeamList => prevTeamList.filter(team => team.team_id !== teamId));
+        // Reload team list after deletion
+        fetch('http://localhost:8000/api/teams/', {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json'
+          }
+        })
+          .then(response => {
+            if (!response.ok) {
+              throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.json();
+          })
+          .then(data => setTeamList(data))
+          .catch(error => console.error('Error fetching teams after deletion:', error.message));
+      })
+      .catch(error => console.error('Error deleting team:', error.message));
   };
 
   return (
@@ -58,10 +97,14 @@ function TeamGrid() {
             <div key={index} className="team-item">
               <h3>{team.grade}B-{team.name}-{lastName}</h3>
               <div className="team-options">
-                <a href={`/team-schedule/${team.id}`}>Schedule</a>
-                <a href={`/roster/${team.id}`}>Roster</a>
-                <a href={`/pitch-count/${team.id}`}>Add Pitch Count</a>
-                <a href={`/summary/${team.id}`}>Summary</a>
+                <a href={`/team-schedule/${team.team_id}`}>Schedule</a>
+                <a href={`/team-roster/${team.team_id}`}>Roster</a>
+                <a href={`/pitch-count/${team.team_id}`}>Add Pitch Count</a>
+                <a href={`/summary/${team.team_id}`}>Team Reports</a>
+                <div>
+                  <button onClick={() => handleDelete(team.team_id)}>Delete</button>
+                  <button title="Move to archive">Archive</button>
+                </div>
               </div>
             </div>
           ))
@@ -74,6 +117,7 @@ function TeamGrid() {
       </div>
       <AddTeamModal show={showModal} handleClose={() => setShowModal(false)} handleSave={handleSave} />
     </div>
+
   );
 }
 

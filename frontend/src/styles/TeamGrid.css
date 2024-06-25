@@ -25,13 +25,23 @@
 
 .team-options {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between; /* Adjusted to space between items */
+  align-items: center; /* Align items vertically */
   gap: 10px;
 }
 
 .team-options a {
   text-decoration: none;
   color: #007bff;
+}
+
+.team-options button {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
 }
 
 .add-team {
