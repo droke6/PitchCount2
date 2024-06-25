@@ -1,15 +1,43 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
+import { ACCESS_TOKEN } from '../../constants';
 
 const AddTeamModal = ({ show, handleClose, handleSave }) => {
   const [teamName, setTeamName] = useState('');
   const [gradeLevel, setGradeLevel] = useState('');
 
   const handleSubmit = () => {
-    handleSave(teamName, gradeLevel);
-    setTeamName('');
-    setGradeLevel('');
-    handleClose();
+    const token = localStorage.getItem(ACCESS_TOKEN);
+    if (token) {
+      // Save new team to the backend
+      fetch('http://localhost:8000/api/teams/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ name: teamName, grade: gradeLevel })  // Ensure grade is included
+      })
+        .then(response => {
+          if (!response.ok) {
+            return response.text().then(text => {
+              throw new Error(`HTTP error! Status: ${response.status}, Response: ${text}`);
+            });
+          }
+          return response.json();
+        })
+        .then(data => {
+          handleSave(data);
+          setTeamName('');
+          setGradeLevel('');
+          handleClose();
+        })
+        .catch(error => console.error('Error adding team:', error.message));
+    } else {
+      console.error('No token found');
+      handleClose();
+    }
   };
 
   if (!show) {
@@ -22,12 +50,14 @@ const AddTeamModal = ({ show, handleClose, handleSave }) => {
         <span className="close" onClick={handleClose}>&times;</span>
         <h2>New Team</h2>
         <input
+          className='input'
           type="text"
           value={teamName}
           onChange={(e) => setTeamName(e.target.value)}
           placeholder="Team Name"
         />
         <select
+          className='grade-level'
           name="grade"
           id="grade"
           value={gradeLevel}

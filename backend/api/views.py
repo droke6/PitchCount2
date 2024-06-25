@@ -1,11 +1,11 @@
 import logging
 from rest_framework import generics, status, permissions
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import User, Team, Player
 from .serializers import UserSerializer, LoginSerializer, TeamSerializer, PlayerSerializer
-from rest_framework_simplejwt.authentication import JWTAuthentication
 
 logger = logging.getLogger(__name__)
 
@@ -72,14 +72,10 @@ class TeamListView(generics.ListCreateAPIView):
     authentication_classes = [JWTAuthentication]
 
     def get_queryset(self):
-        return Team.objects.filter(coach=self.request.user)
+        return Team.objects.filter(coach__user_id=self.request.user.user_id)
 
     def perform_create(self, serializer):
-        try:
-            serializer.save(coach=self.request.user)
-        except Exception as e:
-            logger.error(f"Error creating team: {e}", exc_info=True)
-            raise
+        serializer.save(coach=self.request.user)  # Ensure the coach is set as the logged-in user
 
 class PlayerListView(generics.ListCreateAPIView):
     serializer_class = PlayerSerializer
@@ -88,11 +84,11 @@ class PlayerListView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         team_id = self.kwargs['team_id']
-        return Player.objects.filter(team__id=team_id, team__coach=self.request.user)
+        return Player.objects.filter(team__team_id=team_id, team__coach__user_id=self.request.user.user_id)
 
     def perform_create(self, serializer):
         team_id = self.kwargs['team_id']
-        team = Team.objects.get(id=team_id, coach=self.request.user)
+        team = Team.objects.get(team_id=team_id, coach__user_id=self.request.user.user_id)
         serializer.save(team=team)
 
 class TeamDetailView(APIView):
@@ -101,7 +97,7 @@ class TeamDetailView(APIView):
 
     def get(self, request, team_id, format=None):
         try:
-            team = Team.objects.get(team_id=team_id, coach=request.user)
+            team = Team.objects.get(team_id=team_id, coach__user_id=request.user.user_id)
             serializer = TeamSerializer(team)
             return Response(serializer.data)
         except Team.DoesNotExist:
@@ -112,7 +108,7 @@ class TeamDetailView(APIView):
 
     def delete(self, request, team_id, format=None):
         try:
-            team = Team.objects.get(team_id=team_id, coach=request.user)
+            team = Team.objects.get(team_id=team_id, coach__user_id=request.user.user_id)
             team.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except Team.DoesNotExist:

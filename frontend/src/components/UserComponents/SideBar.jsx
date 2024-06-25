@@ -62,16 +62,17 @@ const SideBar = () => {
                 <div onClick={() => navigateTo("/")}> Team 1 </div>
               </MenuItem>
               <MenuItem style={{color:"#040C18", fontSize:"16px"}}>
-              <div onClick={() => navigateTo("/OrderStatus")}> Schedules</div>
+              <div onClick={() => navigateTo("/OrderStatus")}> Team 2 </div>
               </MenuItem>
               <MenuItem style={{color:"#040C18", fontSize:"16px"}}>
-              <div onClick={() => navigateTo("/OrderHistory")}> Order History </div>
+              <div onClick={() => navigateTo("/OrderHistory")}> Team 3 </div>
               </MenuItem>
             </SubMenu>
             
-            <MenuItem style={{color:"#040C18", fontSize:"16px"}}> Active Tournaments </MenuItem>
-            <MenuItem style={{color:"#040C18", fontSize:"16px"}}> Calendar </MenuItem>
-            <MenuItem style={{color:"#040C18", fontSize:"16px"}}> Contact Us </MenuItem>
+            <MenuItem style={{color:"#040C18", fontSize:"16px"}}> Rosters </MenuItem>
+            <MenuItem style={{color:"#040C18", fontSize:"16px"}}> Schedules </MenuItem>
+            <MenuItem style={{color:"#040C18", fontSize:"16px"}} onClick={() => navigateTo('/reports')}> Reports </MenuItem>
+            <MenuItem style={{color:"#040C18", fontSize:"16px"}} onClick={() => navigateTo('/archived')}> Archived Players</MenuItem>
           </Menu>
           <button onClick={handleLogout}>Logout</button>
           </div>

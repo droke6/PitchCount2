@@ -35,7 +35,8 @@ class PlayerSerializer(serializers.ModelSerializer):
 
 class TeamSerializer(serializers.ModelSerializer):
     players = PlayerSerializer(many=True, read_only=True)
+    coach = serializers.PrimaryKeyRelatedField(read_only=True)  # Make coach read-only
 
     class Meta:
         model = Team
-        fields = ['team_id', 'name', 'coach', 'players']
+        fields = ['team_id', 'name', 'grade', 'coach', 'players']

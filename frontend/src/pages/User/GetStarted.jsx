@@ -4,7 +4,7 @@ import { ACCESS_TOKEN, REFRESH_TOKEN, FIRST_NAME, LAST_NAME, USER_ID } from "../
 import api from '../../api';
 import '../../styles/Login.css';
 
-function Login() {
+function GetStarted() {
   const [first_name, setFirstName] = useState('');
   const [last_name, setLastName] = useState('');
   const [email, setEmail] = useState('');
@@ -77,4 +77,4 @@ function Login() {
   );
 }
 
-export default Login;
+export default GetStarted;
