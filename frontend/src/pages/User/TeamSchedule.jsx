@@ -1,11 +1,17 @@
-import ScheduleGrid from '../../components/UserComponents/ScheduleGrid'
+import TeamScheduleComponent from '../../components/UserComponents/TeamScheduleComponent'
+import SideBar from '../../components/UserComponents/SideBar'
+import Topbar from '../../components/UserComponents/Topbar'
+import '../../styles/Home.css'
 
 function TeamSchedule() {
   return (
-    <>
-      <h1>TeamSchedule</h1>
-      <ScheduleGrid />
-    </>
+    <div className="page-container">
+      <SideBar />
+      <div className="content">
+        <Topbar />
+        <TeamScheduleComponent />
+      </div>
+    </div>
   )
 }
 

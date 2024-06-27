@@ -31,7 +31,7 @@ class LoginSerializer(serializers.Serializer):
 class PlayerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Player
-        fields = ['first_name', 'last_name', 'team']
+        fields = ['player_id', 'first_name', 'last_name', 'team', 'bats', 'number']
 
 class TeamSerializer(serializers.ModelSerializer):
     players = PlayerSerializer(many=True, read_only=True)
@@ -39,3 +39,4 @@ class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
         fields = ['team_id', 'name', 'grade', 'coach', 'players']
+

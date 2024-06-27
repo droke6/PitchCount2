@@ -1,20 +1,21 @@
 import Topbar from '../../components/UserComponents/Topbar'
 import SideBar from '../../components/UserComponents/SideBar'
+import ArchivedTeamsComponent from '../../components/UserComponents/ArchivedTeamsComponent'
 import '../../styles/Home.css'
 
-function ArchivedPlayers() {
-  
+function ArchivedTeams() {
   return (
     <>
       <div className="page-container">
         <SideBar />
         <div className="content">
           <Topbar />
-          Archived Players
+          Archived Teams
+          <ArchivedTeamsComponent />
         </div>
       </div>
     </>
   )
 }
 
-export default ArchivedPlayers
+export default ArchivedTeams

@@ -35,13 +35,21 @@
   color: #007bff;
 }
 
+.team-options a:hover {
+  color: #02182e;
+}
+
 .team-options button {
-  background-color: #dc3545;
+  background-color: #dc0e23;
   color: white;
   border: none;
   padding: 8px 12px;
   border-radius: 5px;
   cursor: pointer;
+}
+
+.team-options button:hover {
+  background-color: #850611;
 }
 
 .add-team {

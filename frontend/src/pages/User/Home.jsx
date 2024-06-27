@@ -5,6 +5,7 @@ import '../../styles/Home.css';
 import TeamGrid from "../../components/UserComponents/TeamGrid";
 import { useNavigate } from 'react-router-dom';
 import { ACCESS_TOKEN, USER_ID } from '../../constants';
+import { refreshAccessToken } from '../../utils/tokenUtils';  // Import the utility
 
 function Home() {
   const [teams, setTeams] = useState([]);
@@ -19,23 +20,33 @@ function Home() {
     }
   }, []);
 
-  const fetchTeams = (token, userId) => {
-    fetch(`http://localhost:8000/api/teams/?coach=${userId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'Accept': 'application/json'
-      }
-    })
-    .then(response => {
+  const fetchTeams = async (token, userId) => {
+    try {
+      const response = await fetch(`http://localhost:8000/api/teams/?coach=${userId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Accept': 'application/json'
+        }
+      });
+
       if (!response.ok) {
+        if (response.status === 401) {
+          const newToken = await refreshAccessToken();
+          if (newToken) {
+            fetchTeams(newToken, userId);
+            return;
+          } else {
+            handleLogout();
+          }
+        }
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
-      return response.json();
-    })
-    .then(data => {
+
+      const data = await response.json();
       setTeams(data);
-    })
-    .catch(error => console.error('Error fetching teams:', error));
+    } catch (error) {
+      console.error('Error fetching teams:', error);
+    }
   };
 
   const handleLogout = () => {

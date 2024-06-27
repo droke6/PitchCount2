@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { Sidebar, Menu, MenuItem, SubMenu } from 'react-pro-sidebar';
 import { useNavigate } from 'react-router-dom';
-import { Box, Typography } from '@mui/material'
+import { Box, Typography } from '@mui/material';
 import AccountCircleSharpIcon from '@mui/icons-material/AccountCircleSharp';
-import '../../styles/Sidebar.css'
+import '../../styles/Sidebar.css';
 import { ACCESS_TOKEN, FIRST_NAME, LAST_NAME, REFRESH_TOKEN, USER_ID } from '../../constants';
+import PitchRules from "./PitchRules";
 
 const SideBar = () => {
   const [firstName, setFirstName] = useState("");
@@ -64,10 +65,10 @@ const SideBar = () => {
 
   return (
     <div>
-      <Sidebar className='sidebar' style={{height:"100vh"}}>
+      <Sidebar className='sidebar' style={{ height: "100vh" }}>
         <div>
-          <Box style={{display: "flex", justifyContent: "center", mt: "40px"}}>
-            <AccountCircleSharpIcon onClick={() => navigateTo('/')} style={{width: "100px", height: "100px", cursor: "pointer"}}/>
+          <Box style={{ display: "flex", justifyContent: "center", mt: "40px" }}>
+            <AccountCircleSharpIcon onClick={() => navigateTo('/')} style={{ width: "100px", height: "100px", cursor: "pointer" }} />
           </Box>
           <Box>
             <Box textAlign="center">
@@ -83,24 +84,30 @@ const SideBar = () => {
           </Box>
 
           <Menu>
-            <SubMenu label="My Teams" style={{color:"#040C18", fontSize:"16px"}}>
-              {coachTeams.map((team, index) => (
-                <MenuItem key={index} style={{color:"#040C18", fontSize:"16px"}}>
-                  <div onClick={() => navigateTo(`/team-details/${team.id}`)}>
-                    {team.grade}B - {team.name}
-                  </div>
-                </MenuItem>
-              ))}
+            <SubMenu label="My Teams" style={{ color: "#040C18", fontSize: "16px" }}>
+              {coachTeams
+                .sort((team1, team2) => team1.grade - team2.grade) // Sort by grade ascending
+                .map((team, index) => (
+                  <MenuItem key={index} style={{ color: "#040C18", fontSize: "16px" }}>
+                    <div onClick={() => navigateTo(`/team-details/${team.team_id}`)}>
+                      {team.grade}B - {team.name}
+                    </div>
+                  </MenuItem>
+                ))}
             </SubMenu>
             
-            <MenuItem style={{color:"#040C18", fontSize:"16px"}}> Rosters </MenuItem>
-            <MenuItem style={{color:"#040C18", fontSize:"16px"}}> Schedules </MenuItem>
-            <MenuItem style={{color:"#040C18", fontSize:"16px"}} onClick={() => navigateTo('/reports')}> Reports </MenuItem>
+            <MenuItem style={{ color: "#040C18", fontSize: "16px" }}> Rosters </MenuItem>
+            <MenuItem style={{ color: "#040C18", fontSize: "16px" }}> Schedules </MenuItem>
+            <MenuItem style={{ color: "#040C18", fontSize: "16px" }} onClick={() => navigateTo('/reports')}> Reports </MenuItem>
 
-            <SubMenu label="Archives" style={{color:"#040C18", fontSize:"16px"}}>
-              <MenuItem style={{color:"#040C18", fontSize:"16px"}} onClick={() => navigateTo('/archived')}> Archived Teams</MenuItem>
-              <MenuItem style={{color:"#040C18", fontSize:"16px"}} onClick={() => navigateTo('/archived')}> Archived Players</MenuItem>
+            <SubMenu label="Archives" style={{ color: "#040C18", fontSize: "16px" }}>
+              <MenuItem style={{ color: "#040C18", fontSize: "16px" }} onClick={() => navigateTo('/archived-teams')}> Archived Teams</MenuItem>
+              <MenuItem style={{ color: "#040C18", fontSize: "16px" }} onClick={() => navigateTo('/archived-players')}> Archived Players</MenuItem>
             </SubMenu>
+
+            <MenuItem style={{ color: "#040C18", fontSize: "16px" }}>
+              <PitchRules />
+            </MenuItem>
 
           </Menu>
           <button onClick={handleLogout}>Logout</button>
