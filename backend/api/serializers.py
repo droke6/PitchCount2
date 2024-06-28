@@ -38,7 +38,7 @@ class TeamSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Team
-        fields = ['team_id', 'name', 'grade', 'coach', 'players']
+        fields = ['team_id', 'name', 'grade', 'coach', 'players', 'created_date']
 
 # serializers.py
 class ArchivedTeamSerializer(serializers.ModelSerializer):

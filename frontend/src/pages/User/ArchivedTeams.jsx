@@ -10,6 +10,7 @@ function ArchivedTeams() {
         <SideBar />
         <div className="content">
           <Topbar />
+          <h1 style={{'textAlign': 'center', 'marginBottom': -30}}>Archived Teams</h1>
           <ArchivedTeamGrid />
         </div>
       </div>

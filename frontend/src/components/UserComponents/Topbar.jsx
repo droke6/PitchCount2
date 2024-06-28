@@ -78,7 +78,7 @@ const Topbar = ({ teams }) => {
                   }
                 }}
               >
-                {team.name}
+                {team.name} (Active)
               </Box>
             ))}
           </Box>

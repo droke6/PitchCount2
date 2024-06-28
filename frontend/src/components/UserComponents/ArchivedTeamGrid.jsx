@@ -53,6 +53,31 @@ function ArchivedTeamGrid() {
         }
     };
 
+    const handleDelete = async (teamId) => {
+        const token = localStorage.getItem(ACCESS_TOKEN);
+        if (!token) {
+          navigate('/sign-in');
+          return;
+        }
+      
+        try {
+          const response = await fetch(`http://localhost:8000/api/teams/${teamId}/`, {
+            method: 'DELETE',
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          });
+      
+          if (!response.ok) {
+            throw new Error(`HTTP error! Status: ${response.status}`);
+          }
+      
+          setTeamList(prevTeamList => prevTeamList.filter(team => team.team_id !== teamId));
+        } catch (error) {
+          console.error('Error deleting team:', error.message);
+        }
+      };
+
     const handleUnarchive = async (teamId) => {
         const token = localStorage.getItem(ACCESS_TOKEN);
         try {
@@ -79,8 +104,8 @@ function ArchivedTeamGrid() {
 
     return (
         <div className="coach-teams-section">
-            <div className="coach-teams-grid">
-                {sortedTeamList.length === 0 ?(
+            <div className={`coach-teams-grid ${sortedTeamList.length <= 1 ? 'one-column' : 'two-column'}`}>
+                {sortedTeamList.length === 0 ? (
                     <div className="no-teams">
                         <p>You don't have any archived teams.</p>
                     </div>
@@ -89,15 +114,18 @@ function ArchivedTeamGrid() {
                         <div key={index} className="team-item">
                             <h3>{team.grade}B-{team.name}-{lastName}</h3>
                             <div className="team-options">
-                                <a href="">Past Seasons</a>
-                                <a href="">Roster</a>
-                                <a href="">Team Reports</a>
-                                <div>
-                                    <button onClick={() => handleUnarchive(team.team_id)}>Unarchive</button>
-                                </div>
+                                <a href="#">Past Seasons</a>
+                                <a href="#">Roster</a>
+                                <a href="#">Team Reports</a>
+                                <button onClick={() => handleUnarchive(team.team_id)}>Unarchive</button>
+                                <button onClick={() => handleDelete(team.team_id)}>Delete</button>
                             </div>
                         </div>
                     ))
+                )}
+                {/* Additional empty grid item for odd number of teams */}
+                {sortedTeamList.length % 2 === 1 && (
+                    <div className="empty-team-item"></div>
                 )}
             </div>
         </div>

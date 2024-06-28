@@ -79,6 +79,7 @@ class Team(models.Model):
     coach = models.ForeignKey(User, on_delete=models.CASCADE, related_name='teams', null=True, blank=True)
     coach_first_name = models.CharField(max_length=30, blank=True)  # Added for storing coach's first name
     coach_last_name = models.CharField(max_length=30, blank=True)   # Added for storing coach's last name
+    created_date = models.DateTimeField(default=timezone.now)
 
     def save(self, *args, **kwargs):
         # Automatically populate coach's first and last name if coach is set

@@ -1,4 +1,5 @@
 /* TeamGrid.css */
+
 .coach-teams-section {
   padding: 20px;
 }
@@ -7,7 +8,15 @@
   display: grid;
   gap: 20px;
   padding: 20px;
-  grid-template-columns: 1fr; /* Single column */
+  grid-template-columns: 1fr; /* Default to one column */
+}
+
+.coach-teams-grid.two-column {
+  grid-template-columns: repeat(2, 1fr); /* Two columns for even number of teams */
+}
+
+.coach-teams-grid.centered-last {
+  grid-template-columns: repeat(2, 1fr); /* Two columns for odd number of teams */
 }
 
 .no-teams,

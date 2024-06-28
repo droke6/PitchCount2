@@ -59,6 +59,32 @@ function TeamGrid() {
     setTeamList([...teamList, newTeam]);
   };
 
+  const handleDelete = async (teamId) => {
+    const token = localStorage.getItem(ACCESS_TOKEN);
+    if (!token) {
+      navigate('/sign-in');
+      return;
+    }
+  
+    try {
+      const response = await fetch(`http://localhost:8000/api/teams/${teamId}/`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+  
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+  
+      setTeamList(prevTeamList => prevTeamList.filter(team => team.team_id !== teamId));
+    } catch (error) {
+      console.error('Error deleting team:', error.message);
+    }
+  };
+  
+
   const handleArchive = async (teamId) => {
     const token = localStorage.getItem(ACCESS_TOKEN);
     if (!token) {
@@ -91,7 +117,7 @@ function TeamGrid() {
 
   return (
     <div className="coach-teams-section">
-      <div className="coach-teams-grid">
+      <div className={`coach-teams-grid ${sortedTeamList.length <= 1 ? 'one-column' : 'two-column'}`}>
         {sortedTeamList.length === 0 ? (
           <div className="no-teams">
             <p>You have not added any teams to your account.</p>
@@ -112,6 +138,10 @@ function TeamGrid() {
               </div>
             </div>
           ))
+        )}
+        {/* Additional empty grid item for odd number of teams */}
+        {sortedTeamList.length % 2 === 1 && (
+          <div className="empty-team-item"></div>
         )}
       </div>
       <div className="add-team">
