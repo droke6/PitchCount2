@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
 import AddTeamModal from './AddNewTeamModal';
-import { ACCESS_TOKEN, LAST_NAME, REFRESH_TOKEN } from '../../constants';
+import { ACCESS_TOKEN, LAST_NAME} from '../../constants';
 import '../../styles/TeamGrid.css';
 import { refreshAccessToken } from '../../utils/tokenUtils';  // Import the utility
 
@@ -22,7 +22,7 @@ function TeamGrid() {
     if (token) {
       fetchTeams(token);
     } else {
-      navigate('/login');
+      navigate('/sign-in');
     }
   }, [navigate]);
 
@@ -42,7 +42,7 @@ function TeamGrid() {
             fetchTeams(newToken);
             return;
           } else {
-            navigate('/login');
+            navigate('/sign-in');
           }
         }
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -59,16 +59,16 @@ function TeamGrid() {
     setTeamList([...teamList, newTeam]);
   };
 
-  const handleDelete = async (teamId) => {
+  const handleArchive = async (teamId) => {
     const token = localStorage.getItem(ACCESS_TOKEN);
     if (!token) {
-      navigate('/login');
+      navigate('/sign-in');
       return;
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/api/teams/${teamId}/`, {
-        method: 'DELETE',
+      const response = await fetch(`http://localhost:8000/api/teams/${teamId}/archive/`, {
+        method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -82,7 +82,7 @@ function TeamGrid() {
       setTeamList(prevTeamList => prevTeamList.filter(team => team.team_id !== teamId));
       fetchTeams(token);
     } catch (error) {
-      console.error('Error deleting team:', error.message);
+      console.error('Error archiving team:', error.message);
     }
   };
 
@@ -106,7 +106,7 @@ function TeamGrid() {
                 <a href={`/pitch-count/${team.team_id}`}>Add Pitch Count</a>
                 <a href={`/team-reports/${team.team_id}`}>Team Reports</a>
                 <div>
-                  <button title="Move to archive">Archive</button>
+                  <button title="Move to archive" onClick={() => handleArchive(team.team_id)}>Archive</button>
                   <button onClick={() => handleDelete(team.team_id)}>Delete</button>
                 </div>
               </div>

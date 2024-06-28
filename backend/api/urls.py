@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UserRegisterView, LoginView, DeleteUserView, ListUsersView, TeamListView, TeamDetailView, PlayerListView
+from .views import UserRegisterView, LoginView, DeleteUserView, ListUsersView, TeamListView, TeamDetailView, PlayerListView, ArchiveTeamView, ArchiveTeamView, UnarchiveTeamView
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
 urlpatterns = [
@@ -12,4 +12,8 @@ urlpatterns = [
     path('teams/', TeamListView.as_view(), name='list_teams'),
     path('teams/<int:team_id>/', TeamDetailView.as_view(), name='detail_team'),
     path('teams/<int:team_id>/players/', PlayerListView.as_view(), name='list_create_players'),
+    path('teams/<int:team_id>/archive/', ArchiveTeamView.as_view(), name='archive_team'),
+    path('archived-teams/', ArchiveTeamView.as_view(), name='archived_teams'),
+    path('teams/<int:team_id>/unarchive-team/', UnarchiveTeamView.as_view(), name='unarchive-team'),
+
 ]

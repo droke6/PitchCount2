@@ -1,6 +1,6 @@
 import Topbar from '../../components/UserComponents/Topbar'
 import SideBar from '../../components/UserComponents/SideBar'
-import ArchivedTeamsComponent from '../../components/UserComponents/ArchivedTeamsComponent'
+import ArchivedTeamGrid from '../../components/UserComponents/ArchivedTeamGrid'
 import '../../styles/Home.css'
 
 function ArchivedTeams() {
@@ -10,8 +10,7 @@ function ArchivedTeams() {
         <SideBar />
         <div className="content">
           <Topbar />
-          Archived Teams
-          <ArchivedTeamsComponent />
+          <ArchivedTeamGrid />
         </div>
       </div>
     </>

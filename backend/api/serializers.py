@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Team, Player
+from .models import User, Team, Player, ArchivedTeam
 from django.contrib.auth.hashers import check_password, make_password
 
 class UserSerializer(serializers.ModelSerializer):
@@ -39,4 +39,10 @@ class TeamSerializer(serializers.ModelSerializer):
     class Meta:
         model = Team
         fields = ['team_id', 'name', 'grade', 'coach', 'players']
+
+# serializers.py
+class ArchivedTeamSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ArchivedTeam
+        fields = ['team_id', 'name', 'grade', 'coach_first_name', 'coach_last_name', 'archived_date']
 

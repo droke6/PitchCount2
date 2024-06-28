@@ -4,6 +4,7 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, Permis
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.contrib.admin.models import LogEntry
+from django.utils import timezone
 
 def generate_user_id():
     return random.randint(1000, 9999)
@@ -88,14 +89,31 @@ class Team(models.Model):
 
     def __str__(self):
         return self.name
-    
+
+class ArchivedTeam(models.Model):
+    team_id = models.IntegerField(primary_key=True, unique=True, default=generate_team_id)
+    name = models.CharField(max_length=100)
+    grade = models.CharField(max_length=10, default='N/A')
+    coach = models.ForeignKey(User, on_delete=models.CASCADE, related_name='archived_teams', null=True, blank=True)
+    coach_first_name = models.CharField(max_length=30, blank=True)
+    coach_last_name = models.CharField(max_length=30, blank=True)
+    archived_date = models.DateTimeField(default=timezone.now)
+
+    def save(self, *args, **kwargs):
+        if self.coach:
+            self.coach_first_name = self.coach.first_name
+            self.coach_last_name = self.coach.last_name
+        super().save(*args, **kwargs)
+
+    def __str__(self):
+        return self.name
 
 class Player(models.Model):
     player_id = models.IntegerField(primary_key=True, unique=True, default=random.randint(1000, 9999))
     first_name = models.CharField(max_length=30)
     last_name = models.CharField(max_length=30)
     bats = models.CharField(max_length=30, default='N/A')
-    number= models.IntegerField(default=0)
+    number = models.IntegerField(default=0)
     team = models.ForeignKey(Team, on_delete=models.CASCADE, related_name='players')
 
     def __str__(self):

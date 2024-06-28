@@ -4,8 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from .models import User, Team, Player
-from .serializers import UserSerializer, LoginSerializer, TeamSerializer, PlayerSerializer
+from .models import User, Team, Player, ArchivedTeam
+from .serializers import UserSerializer, LoginSerializer, TeamSerializer, PlayerSerializer, ArchivedTeamSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -116,3 +116,55 @@ class TeamDetailView(APIView):
         except Exception as e:
             logger.error(f"Error deleting team: {e}", exc_info=True)
             return Response({'error': 'Something went wrong'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class ArchiveTeamView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def post(self, request, team_id, format=None):
+        try:
+            team = Team.objects.get(team_id=team_id, coach__user_id=request.user.user_id)
+            archived_team = ArchivedTeam(
+                team_id=team.team_id,
+                name=team.name,
+                grade=team.grade,
+                coach=team.coach,
+                coach_first_name=team.coach_first_name,
+                coach_last_name=team.coach_last_name
+            )
+            archived_team.save()
+            team.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except Team.DoesNotExist:
+            return Response({'error': 'Team not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            logger.error(f"Error archiving team: {e}", exc_info=True)
+            return Response({'error': 'Something went wrong'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+    def get(self, request, format=None):
+        try:
+            archived_teams = ArchivedTeam.objects.all()
+            serializer = ArchivedTeamSerializer(archived_teams, many=True)
+            return Response(serializer.data)
+        except Exception as e:
+            logger.error(f"Error fetching archived teams: {e}", exc_info=True)
+            return Response({'error': 'Something went wrong'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+        
+class UnarchiveTeamView(APIView):
+    def post(self, request, team_id, format=None):
+        try:
+            archived_team = ArchivedTeam.objects.get(team_id=team_id)
+            new_team = Team.objects.create(
+                team_id=archived_team.team_id,
+                name=archived_team.name,
+                grade=archived_team.grade,
+                coach=archived_team.coach,
+                coach_first_name=archived_team.coach_first_name,
+                coach_last_name=archived_team.coach_last_name
+            )
+            archived_team.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except ArchivedTeam.DoesNotExist:
+            return Response({'error': 'Archived team not found'}, status=status.HTTP_404_NOT_FOUND)
+        except Exception as e:
+            return Response({'error': f'Something went wrong: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

@@ -48,7 +48,7 @@ function TeamDetailsComponent() {
 
   return (
     <div>
-      <h2>Team: {teamName}</h2>
+      <h2>Team Details: {teamName}</h2>
     </div>
   );
 }
