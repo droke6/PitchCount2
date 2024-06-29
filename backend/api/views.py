@@ -130,7 +130,8 @@ class ArchiveTeamView(APIView):
                 grade=team.grade,
                 coach=team.coach,
                 coach_first_name=team.coach_first_name,
-                coach_last_name=team.coach_last_name
+                coach_last_name=team.coach_last_name,
+                league=team.league
             )
             archived_team.save()
             team.delete()
@@ -141,30 +142,50 @@ class ArchiveTeamView(APIView):
             logger.error(f"Error archiving team: {e}", exc_info=True)
             return Response({'error': 'Something went wrong'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-    def get(self, request, format=None):
+class ArchivedTeamListView(generics.ListAPIView):
+    serializer_class = ArchivedTeamSerializer
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def get_queryset(self):
+        return ArchivedTeam.objects.filter(coach__user_id=self.request.user.user_id)
+
+class ArchivedTeamDetailView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
+    def delete(self, request, team_id, format=None):
         try:
-            archived_teams = ArchivedTeam.objects.all()
-            serializer = ArchivedTeamSerializer(archived_teams, many=True)
-            return Response(serializer.data)
+            team = ArchivedTeam.objects.get(team_id=team_id)
+            team.delete()
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        except ArchivedTeam.DoesNotExist:
+            return Response({'error': 'Archived team not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            logger.error(f"Error fetching archived teams: {e}", exc_info=True)
+            logger.error(f"Error deleting archived team: {e}", exc_info=True)
             return Response({'error': 'Something went wrong'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
-        
+
 class UnarchiveTeamView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
+    authentication_classes = [JWTAuthentication]
+
     def post(self, request, team_id, format=None):
         try:
-            archived_team = ArchivedTeam.objects.get(team_id=team_id)
-            new_team = Team.objects.create(
+            archived_team = ArchivedTeam.objects.get(team_id=team_id, coach__user_id=request.user.user_id)
+            team = Team(
                 team_id=archived_team.team_id,
                 name=archived_team.name,
                 grade=archived_team.grade,
                 coach=archived_team.coach,
                 coach_first_name=archived_team.coach_first_name,
-                coach_last_name=archived_team.coach_last_name
+                coach_last_name=archived_team.coach_last_name,
+                league=archived_team.league
             )
+            team.save()
             archived_team.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         except ArchivedTeam.DoesNotExist:
             return Response({'error': 'Archived team not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
-            return Response({'error': f'Something went wrong: {str(e)}'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+            logger.error(f"Error un-archiving team: {e}", exc_info=True)
+            return Response({'error': 'Something went wrong'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)

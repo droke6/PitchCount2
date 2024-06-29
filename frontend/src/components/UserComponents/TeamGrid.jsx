@@ -93,7 +93,7 @@ function TeamGrid() {
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/api/teams/${teamId}/archive/`, {
+      const response = await fetch(`http://localhost:8000/api/archive-team/${teamId}/`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,
@@ -125,7 +125,10 @@ function TeamGrid() {
         ) : (
           sortedTeamList.map((team, index) => (
             <div key={index} className="team-item">
-              <h3>{team.grade}B-{team.name}-{lastName}</h3>
+              <span className='team-title' onClick={() => navigate(`/team-details/${team.team_id}/`)}>
+                <h3>{team.grade}B-{team.name}-{lastName}</h3>
+              </span>
+              <h4>{team.league}</h4>
               <div className="team-options">
                 <a href={`/team-schedule/${team.team_id}`}>Schedule</a>
                 <a href={`/team-roster/${team.team_id}`}>Roster</a>

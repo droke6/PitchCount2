@@ -2,9 +2,10 @@ import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { ACCESS_TOKEN } from '../../constants';
 
-const AddTeamModal = ({ show, handleClose, handleSave, }) => {
+const AddTeamModal = ({ show, handleClose, handleSave }) => {
   const [teamName, setTeamName] = useState('');
   const [gradeLevel, setGradeLevel] = useState('');
+  const [league, setLeague] = useState('');
 
   const handleSubmit = () => {
     const token = localStorage.getItem(ACCESS_TOKEN);
@@ -17,7 +18,7 @@ const AddTeamModal = ({ show, handleClose, handleSave, }) => {
           'Authorization': `Bearer ${token}`,
           'Accept': 'application/json'
         },
-        body: JSON.stringify({ name: teamName, grade: gradeLevel })
+        body: JSON.stringify({ name: teamName, grade: gradeLevel, league })  // Include league here
       })
         .then(response => {
           if (!response.ok) {
@@ -31,6 +32,7 @@ const AddTeamModal = ({ show, handleClose, handleSave, }) => {
           handleSave(data);
           setTeamName('');
           setGradeLevel('');
+          setLeague('');
           handleClose();
         })
         .catch(error => console.error('Error adding team:', error.message));
@@ -76,6 +78,13 @@ const AddTeamModal = ({ show, handleClose, handleSave, }) => {
           <option value="11">11</option>
           <option value="12">12</option>
         </select>
+        <input
+          className='input'
+          type='text'
+          value={league}
+          onChange={(e) => setLeague(e.target.value)}
+          placeholder='League'
+        />
         <button className='add-button' onClick={handleSubmit}>Save Team</button>
       </div>
     </div>

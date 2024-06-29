@@ -32,6 +32,10 @@
   margin: 0 0 10px;
 }
 
+.team-title {
+  cursor: pointer;
+}
+
 .team-options {
   display: flex;
   justify-content: space-between; /* Adjusted to space between items */

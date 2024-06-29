@@ -7,8 +7,9 @@ import '../../styles/TeamGrid.css';
 
 function ArchivedTeamGrid() {
     const [teamList, setTeamList] = useState([]);
+    const [league, setLeague] = useState('');
+    const [lastName, setLastName] = useState('');
     const navigate = useNavigate();
-    const [lastName, setLastName] = useState("");
 
     useEffect(() => {
         const storedLastName = localStorage.getItem(LAST_NAME);
@@ -56,43 +57,53 @@ function ArchivedTeamGrid() {
     const handleDelete = async (teamId) => {
         const token = localStorage.getItem(ACCESS_TOKEN);
         if (!token) {
-          navigate('/sign-in');
-          return;
+            navigate('/sign-in');
+            return;
         }
-      
+
         try {
-          const response = await fetch(`http://localhost:8000/api/teams/${teamId}/`, {
-            method: 'DELETE',
-            headers: {
-              'Authorization': `Bearer ${token}`
+            const response = await fetch(`http://localhost:8000/api/archived-teams/${teamId}/`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (!response.ok) {
+                if (response.status === 401) {
+                    const newToken = await refreshAccessToken();
+                    if (newToken) {
+                        handleDelete(teamId, newToken); // Retry delete with new token
+                        return;
+                    } else {
+                        navigate('/sign-in');
+                    }
+                }
+                throw new Error(`HTTP error! Status: ${response.status}`);
             }
-          });
-      
-          if (!response.ok) {
-            throw new Error(`HTTP error! Status: ${response.status}`);
-          }
-      
-          setTeamList(prevTeamList => prevTeamList.filter(team => team.team_id !== teamId));
+
+            setTeamList(prevTeamList => prevTeamList.filter(team => team.team_id !== teamId));
         } catch (error) {
-          console.error('Error deleting team:', error.message);
+            console.error('Error deleting team:', error.message);
         }
-      };
+    };
 
     const handleUnarchive = async (teamId) => {
         const token = localStorage.getItem(ACCESS_TOKEN);
         try {
-            const response = await fetch(`http://localhost:8000/api/teams/${teamId}/unarchive-team/`, {
+            const response = await fetch(`http://localhost:8000/api/unarchive-team/${teamId}/`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 }
             });
-    
+
             if (!response.ok) {
                 throw new Error(`Failed to unarchive team. Status: ${response.status}`);
             }
-    
+
             setTeamList(prevTeamList => prevTeamList.filter(team => team.team_id !== teamId));
             fetchTeams(token);
         } catch (error) {
@@ -113,6 +124,7 @@ function ArchivedTeamGrid() {
                     sortedTeamList.map((team, index) => (
                         <div key={index} className="team-item">
                             <h3>{team.grade}B-{team.name}-{lastName}</h3>
+                            <h4>{team.league}</h4>
                             <div className="team-options">
                                 <a href="#">Past Seasons</a>
                                 <a href="#">Roster</a>

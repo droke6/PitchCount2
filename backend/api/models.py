@@ -77,9 +77,10 @@ class Team(models.Model):
     name = models.CharField(max_length=100)
     grade = models.CharField(max_length=10, default='N/A')
     coach = models.ForeignKey(User, on_delete=models.CASCADE, related_name='teams', null=True, blank=True)
-    coach_first_name = models.CharField(max_length=30, blank=True)  # Added for storing coach's first name
-    coach_last_name = models.CharField(max_length=30, blank=True)   # Added for storing coach's last name
+    coach_first_name = models.CharField(max_length=30, blank=True)
+    coach_last_name = models.CharField(max_length=30, blank=True)
     created_date = models.DateTimeField(default=timezone.now)
+    league = models.CharField(max_length=100, blank=True)
 
     def save(self, *args, **kwargs):
         # Automatically populate coach's first and last name if coach is set
@@ -99,6 +100,7 @@ class ArchivedTeam(models.Model):
     coach_first_name = models.CharField(max_length=30, blank=True)
     coach_last_name = models.CharField(max_length=30, blank=True)
     archived_date = models.DateTimeField(default=timezone.now)
+    league = models.CharField(max_length=100, blank=True)
 
     def save(self, *args, **kwargs):
         if self.coach:
