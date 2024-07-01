@@ -1,11 +1,40 @@
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { ACCESS_TOKEN } from '../../constants';
+import '../../styles/AddTeamModal.css'
 
 const AddTeamModal = ({ show, handleClose, handleSave }) => {
   const [teamName, setTeamName] = useState('');
   const [gradeLevel, setGradeLevel] = useState('');
   const [league, setLeague] = useState('');
+  const [leaguesList, setLeaguesList] = useState([]);
+
+  useEffect(() => {
+    const fetchLeagues = async () => {
+      const token = localStorage.getItem(ACCESS_TOKEN);
+      if (token) {
+        try {
+          const response = await fetch('http://localhost:8000/api/leagues/', {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: 'application/json',
+            },
+          });
+          if (!response.ok) {
+            throw new Error('Failed to fetch leagues');
+          }
+          const data = await response.json();
+          setLeaguesList(data); // Assuming data is an array of league objects [{ league_id, league_name }]
+        } catch (error) {
+          console.error('Error fetching leagues:', error.message);
+        }
+      } else {
+        console.error('No token found');
+      }
+    };
+
+    fetchLeagues();
+  }, []);
 
   const handleSubmit = () => {
     const token = localStorage.getItem(ACCESS_TOKEN);
@@ -15,10 +44,10 @@ const AddTeamModal = ({ show, handleClose, handleSave }) => {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
-          'Accept': 'application/json'
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
         },
-        body: JSON.stringify({ name: teamName, grade: gradeLevel, league })  // Include league here
+        body: JSON.stringify({ name: teamName, grade: gradeLevel, league }),
       })
         .then(response => {
           if (!response.ok) {
@@ -78,13 +107,22 @@ const AddTeamModal = ({ show, handleClose, handleSave }) => {
           <option value="11">11</option>
           <option value="12">12</option>
         </select>
-        <input
+        <select
           className='input'
-          type='text'
           value={league}
           onChange={(e) => setLeague(e.target.value)}
           placeholder='League'
-        />
+        >
+          <option disabled value="">Select League</option>
+          {leaguesList
+            .slice() // Create a shallow copy of the array
+            .sort((a, b) => a.league.localeCompare(b.league)) // Sort alphabetically by league name
+            .map(league => (
+              <option key={league.league_id} value={league.league}>
+                {league.league}
+              </option>
+            ))}
+        </select>
         <button className='add-button' onClick={handleSubmit}>Save Team</button>
       </div>
     </div>

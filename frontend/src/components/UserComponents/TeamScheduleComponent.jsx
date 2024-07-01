@@ -2,10 +2,13 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { ACCESS_TOKEN } from '../../constants';
 import { refreshAccessToken } from '../../utils/tokenUtils';
+import '../../styles/TeamScheduleComponent.css'
 
 function TeamScheduleComponent() {
   const { teamId } = useParams();
   const [teamName, setTeamName] = useState('');
+  const [league, setLeague] = useState('');
+  const [grade, setGrade] = useState('');
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,6 +44,8 @@ function TeamScheduleComponent() {
 
       const data = await response.json();
       setTeamName(data.name);
+      setLeague(data.league)
+      setGrade(data.grade)
     } catch (error) {
       console.error('Error fetching team details:', error.message);
     }
@@ -48,7 +53,10 @@ function TeamScheduleComponent() {
 
   return (
     <div>
-      <h2>Team Schedule: {teamName}</h2>
+      <div className="title">
+        <h2>Team Schedule: {grade}B - {teamName}</h2>
+        <h3>League: {league}</h3>
+      </div>
     </div>
   );
 }

@@ -2,7 +2,8 @@ from django.urls import path
 from .views import (
     UserRegisterView, LoginView, DeleteUserView, ListUsersView,
     TeamListView, TeamDetailView, PlayerListView, ArchiveTeamView,
-    ArchivedTeamListView, ArchivedTeamDetailView, UnarchiveTeamView
+    ArchivedTeamListView, ArchivedTeamDetailView, UnarchiveTeamView,
+    LeaguesListView
 )
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 
@@ -20,4 +21,5 @@ urlpatterns = [
     path('archived-teams/', ArchivedTeamListView.as_view(), name='list_archived_teams'),
     path('archived-teams/<int:team_id>/', ArchivedTeamDetailView.as_view(), name='detail_archived_team'),
     path('unarchive-team/<int:team_id>/', UnarchiveTeamView.as_view(), name='unarchive_team'),
+    path('leagues/', LeaguesListView.as_view(), name='list_leagues')
 ]

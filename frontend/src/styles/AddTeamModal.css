@@ -1,0 +1,10 @@
+input {
+    width: 270px;
+    background-color: white;
+    border: solid black;
+}
+
+select {
+    width: 300px;
+    height: 30px;
+}

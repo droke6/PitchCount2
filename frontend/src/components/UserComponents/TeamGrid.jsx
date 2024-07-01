@@ -1,15 +1,18 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import { useNavigate } from 'react-router-dom';
-import AddTeamModal from './AddNewTeamModal';
-import { ACCESS_TOKEN, LAST_NAME} from '../../constants';
+import { ACCESS_TOKEN, LAST_NAME } from '../../constants';
 import '../../styles/TeamGrid.css';
 import { refreshAccessToken } from '../../utils/tokenUtils';  // Import the utility
 
 function TeamGrid() {
-  const [showModal, setShowModal] = useState(false);
   const [teamList, setTeamList] = useState([]);
   const [lastName, setLastName] = useState("");
+  const [newTeamName, setNewTeamName] = useState('');
+  const [newGradeLevel, setNewGradeLevel] = useState('');
+  const [newLeague, setNewLeague] = useState('');
+  const [leaguesList, setLeaguesList] = useState([]);
+  const [showNewTeamGrid, setShowNewTeamGrid] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,6 +24,7 @@ function TeamGrid() {
     const token = localStorage.getItem(ACCESS_TOKEN);
     if (token) {
       fetchTeams(token);
+      fetchLeagues(token);
     } else {
       navigate('/sign-in');
     }
@@ -55,8 +59,56 @@ function TeamGrid() {
     }
   };
 
-  const handleSave = (newTeam) => {
-    setTeamList([...teamList, newTeam]);
+  const fetchLeagues = async (token) => {
+    try {
+      const response = await fetch('http://localhost:8000/api/leagues/', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      });
+      if (!response.ok) {
+        throw new Error('Failed to fetch leagues');
+      }
+      const data = await response.json();
+      setLeaguesList(data); // Assuming data is an array of league objects [{ league_id, league_name }]
+    } catch (error) {
+      console.error('Error fetching leagues:', error.message);
+    }
+  };
+
+  const handleSave = async () => {
+    const token = localStorage.getItem(ACCESS_TOKEN);
+    if (token) {
+      try {
+        const response = await fetch('http://localhost:8000/api/teams/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`,
+            'Accept': 'application/json'
+          },
+          body: JSON.stringify({ name: newTeamName, grade: newGradeLevel, league: newLeague })
+        });
+
+        if (!response.ok) {
+          return response.text().then(text => {
+            throw new Error(`HTTP error! Status: ${response.status}, Response: ${text}`);
+          });
+        }
+
+        const data = await response.json();
+        setTeamList([...teamList, data]);
+        setNewTeamName('');
+        setNewGradeLevel('');
+        setNewLeague('');
+        setShowNewTeamGrid(false); // Hide the new team grid after saving
+      } catch (error) {
+        console.error('Error adding team:', error.message);
+      }
+    } else {
+      console.error('No token found');
+    }
   };
 
   const handleDelete = async (teamId) => {
@@ -83,7 +135,6 @@ function TeamGrid() {
       console.error('Error deleting team:', error.message);
     }
   };
-  
 
   const handleArchive = async (teamId) => {
     const token = localStorage.getItem(ACCESS_TOKEN);
@@ -115,10 +166,18 @@ function TeamGrid() {
   // Sort the teamList by grade level in ascending order
   const sortedTeamList = [...teamList].sort((a, b) => a.grade - b.grade);
 
+  const handleCancel = () => {
+    setShowNewTeamGrid(false);
+    // Optionally, you may want to reset any form input values here
+    setNewTeamName('');
+    setNewGradeLevel('');
+    setNewLeague('');
+  };
+
   return (
     <div className="coach-teams-section">
       <div className={`coach-teams-grid ${sortedTeamList.length <= 1 ? 'one-column' : 'two-column'}`}>
-        {sortedTeamList.length === 0 ? (
+        {sortedTeamList.length === 0 && !showNewTeamGrid ? (
           <div className="no-teams">
             <p>You have not added any teams to your account.</p>
           </div>
@@ -142,17 +201,62 @@ function TeamGrid() {
             </div>
           ))
         )}
-        {/* Additional empty grid item for odd number of teams */}
-        {sortedTeamList.length % 2 === 1 && (
-          <div className="empty-team-item"></div>
+        {showNewTeamGrid && (
+          <div className="team-item new-team-item">
+            <input
+              className='input'
+              type="text"
+              value={newTeamName}
+              onChange={(e) => setNewTeamName(e.target.value)}
+              placeholder="Team Name"
+            />
+            <div className="opt">
+              <div>
+                <select
+                  className='grade-level'
+                  name="grade"
+                  id="grade"
+                  value={newGradeLevel}
+                  onChange={(e) => setNewGradeLevel(e.target.value)}
+                  placeholder="Grade Level"
+                >
+                  <option disabled value="">Grade Level</option>
+                  {[3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(grade => (
+                    <option key={grade} value={grade}>{grade}</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <select
+                  className='input'
+                  value={newLeague}
+                  onChange={(e) => setNewLeague(e.target.value)}
+                  placeholder='League'
+                >
+                  <option disabled value="">Select League</option>
+                  {leaguesList
+                    .slice() // Create a shallow copy of the array
+                    .sort((a, b) => a.league.localeCompare(b.league)) // Sort alphabetically by league name
+                    .map(league => (
+                      <option key={league.league_id} value={league.league}>
+                        {league.league}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            </div>
+            <div>
+              <button className='add-team-btn' onClick={handleSave}>Save Team</button>
+              <button className='add-team-btn' onClick={handleCancel}>Cancel</button>
+            </div>
+          </div>
         )}
       </div>
       <div className="add-team">
-        <button className="add-team-btn" onClick={() => setShowModal(true)}>
+        <button className="add-team-btn" onClick={() => setShowNewTeamGrid(true)}>
           + Add New Team
         </button>
       </div>
-      <AddTeamModal show={showModal} handleClose={() => setShowModal(false)} handleSave={handleSave} />
     </div>
   );
 }

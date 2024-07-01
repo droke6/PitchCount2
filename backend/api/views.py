@@ -4,8 +4,8 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework_simplejwt.authentication import JWTAuthentication
-from .models import User, Team, Player, ArchivedTeam
-from .serializers import UserSerializer, LoginSerializer, TeamSerializer, PlayerSerializer, ArchivedTeamSerializer
+from .models import User, Team, Player, ArchivedTeam, Leagues
+from .serializers import UserSerializer, LoginSerializer, TeamSerializer, PlayerSerializer, ArchivedTeamSerializer, LeaguesSerializer
 
 logger = logging.getLogger(__name__)
 
@@ -189,3 +189,7 @@ class UnarchiveTeamView(APIView):
         except Exception as e:
             logger.error(f"Error un-archiving team: {e}", exc_info=True)
             return Response({'error': 'Something went wrong'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
+class LeaguesListView(generics.ListAPIView):
+    queryset = Leagues.objects.all()
+    serializer_class = LeaguesSerializer
